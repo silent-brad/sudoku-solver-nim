@@ -13,12 +13,12 @@ suite "Sudoku solver":
   test "solves a standard puzzle":
     var board = parse_board(Puzzle)
     check solve(board)
-    check board_string(board).replace(" ", "").replace("\n", "") == Solution
+    check replace($board, " ", "").replace("\n", "") == Solution
 
   test "handles an already solved board":
     var board = parse_board(Solution)
     check solve(board)
-    check board_string(board).replace(" ", "").replace("\n", "") == Solution
+    check replace($board, " ", "").replace("\n", "") == Solution
 
   test "rejects duplicate givens":
     var board = parse_board("553070000" & "600195000" & "098000060" &

@@ -4,7 +4,7 @@ default:
   just --list
 
 test:
-  nim c -r {{nimflags}} tests/test_sudoku.nim
+  nim c -r {{nimflags}} -o:bin/test tests/test_sudoku.nim
 
 build:
   mkdir -p bin
@@ -20,3 +20,6 @@ profile:
 
 clean:
   rm -rf bin tests/*.nim.c profiler/*.nim.c
+
+fmt:
+  nimfmt -i **/*.nim

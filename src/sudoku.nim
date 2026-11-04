@@ -37,7 +37,8 @@ proc candidates(state: State, cell: int): Domain =
     row = RowOf[cell]
     col = ColOf[cell]
     box = BoxOf[cell]
-  AllDigits and not (state.row_mask[row] or state.col_mask[col] or state.box_mask[box])
+  AllDigits and not (state.row_mask[row] or state.col_mask[col] or
+      state.box_mask[box])
 
 proc bit_count(mask: Domain): int =
   var remaining = mask
@@ -89,8 +90,7 @@ proc propagate(state: var State): bool =
           return false
         changed = true
         break
-    if changed:
-      continue
+    if changed: continue
 
     for unit in 0..<GridSize:
       for digit in 1..GridSize:
@@ -104,17 +104,14 @@ proc propagate(state: var State): bool =
           if state.board[cell] == 0 and (candidates(state, cell) and bit) != 0:
             found_cell = cell
             inc count
-        if count == 0:
-          return false
+        if count == 0: return false
         if count == 1:
           if not state.assign(found_cell, digit):
             return false
           changed = true
           break
-      if changed:
-        break
-    if changed:
-      continue
+      if changed: break
+    if changed: continue
 
     for unit in 0..<GridSize:
       for digit in 1..GridSize:
@@ -128,17 +125,14 @@ proc propagate(state: var State): bool =
           if state.board[cell] == 0 and (candidates(state, cell) and bit) != 0:
             found_cell = cell
             inc count
-        if count == 0:
-          return false
+        if count == 0: return false
         if count == 1:
           if not state.assign(found_cell, digit):
             return false
           changed = true
           break
-      if changed:
-        break
-    if changed:
-      continue
+      if changed: break
+    if changed: continue
 
     for box in 0..<GridSize:
       let box_row = (box div 3) * 3
@@ -154,23 +148,18 @@ proc propagate(state: var State): bool =
           if state.board[cell] == 0 and (candidates(state, cell) and bit) != 0:
             found_cell = cell
             inc count
-        if count == 0:
-          return false
+        if count == 0: return false
         if count == 1:
           if not state.assign(found_cell, digit):
             return false
           changed = true
           break
-      if changed:
-        break
-    if not changed:
-      return true
+      if changed: break
+    if not changed: return true
 
 proc search(state: var State): bool =
-  if not state.propagate():
-    return false
-  if state.num_empty == 0:
-    return true
+  if not state.propagate(): return false
+  if state.num_empty == 0: return true
 
   var best_cell = -1
   var best_mask = AllDigits
@@ -183,8 +172,7 @@ proc search(state: var State): bool =
       best_cell = cell
       best_mask = mask
       best_count = count
-  if best_cell < 0:
-    return false
+  if best_cell < 0: return false
 
   var mask = best_mask
   while mask != 0:
@@ -207,17 +195,18 @@ proc init_state(board: Board, state: var State): bool =
       state.empty_cells[int(state.num_empty)] = uint8(cell)
       inc state.num_empty
     elif value <= 9:
-      let bit = Domain(1 shl int(value))
-      let row = RowOf[cell]
-      let col = ColOf[cell]
-      let box = BoxOf[cell]
-      if ((state.row_mask[row] or state.col_mask[col] or state.box_mask[box]) and bit) != 0:
+      let
+        bit = Domain(1 shl int(value))
+        row = RowOf[cell]
+        col = ColOf[cell]
+        box = BoxOf[cell]
+      if ((state.row_mask[row] or state.col_mask[col] or state.box_mask[
+          box]) and bit) != 0:
         return false
       state.row_mask[row] = state.row_mask[row] or bit
       state.col_mask[col] = state.col_mask[col] or bit
       state.box_mask[box] = state.box_mask[box] or bit
-    else:
-      return false
+    else: return false
   true
 
 proc solve*(board: var Board): bool =
@@ -246,11 +235,9 @@ proc parse_board*(input: string): Board =
   if index != CellCount:
     raise new_exception(ValueError, "a Sudoku board must contain exactly 81 cells")
 
-proc board_string*(board: Board): string =
+proc `$`*(board: Board): string =
   for row in 0..<GridSize:
-    if row > 0:
-      result.add '\n'
+    if row > 0: result.add '\n'
     for col in 0..<GridSize:
-      if col > 0:
-        result.add ' '
+      if col > 0: result.add ' '
       result.add $board[row * GridSize + col]
